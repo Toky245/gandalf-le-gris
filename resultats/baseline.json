@@ -1,0 +1,9 @@
+{
+  "modele": "tfidf_regression_logistique",
+  "auc_longueur_seule": 0.5337,
+  "rappel_attaques": 0.941,
+  "taux_faux_positifs": 0.0091,
+  "f1": 0.9644,
+  "auc": 0.9921,
+  "n": 617.0
+}

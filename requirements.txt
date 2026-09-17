@@ -3,3 +3,5 @@ pandas
 matplotlib
 langdetect
 jupyter
+scikit-learn
+joblib
