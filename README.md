@@ -35,6 +35,7 @@ Chaque exemple est une ligne JSON :
 | deepset/prompt-injections | Apache 2.0 | Injections et messages normaux, anglais et allemand |
 | Lakera/gandalf_ignore_instructions | MIT | Injections directes, anglais |
 | Lakera/gandalf_summarization | MIT | Injections indirectes, anglais |
+| OpenAssistant/oasst1 | Apache 2.0 | Messages normaux de vrais utilisateurs (en, fr, de, es) |
 | data/fr/seed_fr.jsonl | Ce projet | Attaques, faux amis et messages normaux en francais |
 
 ## Demarrage

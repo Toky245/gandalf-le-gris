@@ -66,7 +66,59 @@ def lakera(nom_dataset, categorie):
     ecrire(SORTIE / f"{court}.jsonl", exemples)
 
 
+# Mots typiques des attaques : on ecarte les prompts OpenAssistant qui les contiennent,
+# pour ne pas introduire par erreur des attaques etiquetees comme normales.
+MOTS_SUSPECTS = [
+    "ignore", "previous instructions", "system prompt", "jailbreak", "dan ",
+    "no restrictions", "developer mode", "ignorez", "ignore tes", "instructions precedentes",
+    "instructions précédentes", "prompt système", "prompt systeme", "anweisungen", "ignoriere",
+]
+
+# Nombre maximum de messages normaux gardes par langue
+QUOTAS_OASST = {"en": 700, "fr": 500, "de": 150, "es": 100}
+
+
+def oasst():
+    """Messages normaux : premiers messages ecrits par de vrais utilisateurs (OpenAssistant, Apache 2.0)."""
+    import random
+    random.seed(42)
+    par_langue = {langue: [] for langue in QUOTAS_OASST}
+    ecartes = 0
+    for split, l in toutes_les_lignes("OpenAssistant/oasst1"):
+        if l["role"] != "prompter" or l["parent_id"] is not None:
+            continue  # on ne garde que le premier message de chaque conversation
+        if l["deleted"] or l["review_result"] is False or l["lang"] not in QUOTAS_OASST:
+            continue
+        texte = l["text"].strip()
+        if not texte:
+            continue
+        if any(mot in texte.lower() for mot in MOTS_SUSPECTS):
+            ecartes += 1
+            continue
+        par_langue[l["lang"]].append((split, l, texte))
+
+    exemples = []
+    for langue, quota in QUOTAS_OASST.items():
+        candidats = par_langue[langue]
+        random.shuffle(candidats)
+        for split, l, texte in candidats[:quota]:
+            exemples.append({
+                "id": f"oasst1-{l['message_id']}",
+                "texte": texte,
+                "label": 0,
+                "categorie": "normal",
+                "type": "normal",
+                "langue": langue,
+                "groupe": f"oasst1-{l['message_tree_id']}",
+                "source": f"OpenAssistant/oasst1:{split}",
+            })
+        print(f"  oasst1 {langue} : {min(len(candidats), quota)} gardes sur {len(candidats)} disponibles")
+    print(f"  oasst1 : {ecartes} prompts ecartes car ils contenaient des mots suspects")
+    ecrire(SORTIE / "oasst1.jsonl", exemples)
+
+
 if __name__ == "__main__":
     deepset()
     lakera("Lakera/gandalf_ignore_instructions", "injection_directe")
     lakera("Lakera/gandalf_summarization", "injection_indirecte")
+    oasst()
