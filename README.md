@@ -26,6 +26,7 @@ Chaque exemple est une ligne JSON :
 | langue    | fr, en, mg... |
 | groupe    | Les variantes d'un meme exemple partagent le meme groupe et restent dans le meme ensemble (entrainement ou test) pour eviter les fuites |
 | source    | Origine de l'exemple |
+| domaine   | Domaine du message (ecommerce, programmation, education...), renseigne pour le dataset francais |
 
 ## Sources
 
